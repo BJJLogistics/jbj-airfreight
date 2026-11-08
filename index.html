@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -140,34 +141,53 @@
       coordinates: [4.7639, 52.3086]
     };
 
-    // 20 major international cargo airports around the world.
+    // 30 international cargo airports around the world.
     const airports = [
+      // Asia and Middle East
       { name: "Hong Kong", code: "HKG", coordinates: [113.9185, 22.3080] },
       { name: "Shanghai Pudong", code: "PVG", coordinates: [121.8052, 31.1443] },
-      { name: "Memphis", code: "MEM", coordinates: [-89.9767, 35.0424] },
-      { name: "Anchorage", code: "ANC", coordinates: [-149.9964, 61.1743] },
       { name: "Seoul Incheon", code: "ICN", coordinates: [126.4505, 37.4602] },
-      { name: "Louisville", code: "SDF", coordinates: [-85.7360, 38.1744] },
       { name: "Taipei Taoyuan", code: "TPE", coordinates: [121.2328, 25.0797] },
       { name: "Tokyo Narita", code: "NRT", coordinates: [140.3929, 35.7720] },
-      { name: "Doha Hamad", code: "DOH", coordinates: [51.6138, 25.2731] },
-      { name: "Miami", code: "MIA", coordinates: [-80.2906, 25.7959] },
-      { name: "Los Angeles", code: "LAX", coordinates: [-118.4081, 33.9416] },
-      { name: "Frankfurt", code: "FRA", coordinates: [8.5622, 50.0379] },
       { name: "Singapore Changi", code: "SIN", coordinates: [103.9915, 1.3644] },
+      { name: "Doha Hamad", code: "DOH", coordinates: [51.6138, 25.2731] },
       { name: "Dubai", code: "DXB", coordinates: [55.3644, 25.2532] },
-      { name: "Paris Charles de Gaulle", code: "CDG", coordinates: [2.5479, 49.0097] },
-      { name: "Cincinnati", code: "CVG", coordinates: [-84.6678, 39.0488] },
       { name: "Guangzhou", code: "CAN", coordinates: [113.2988, 23.3924] },
       { name: "Shenzhen", code: "SZX", coordinates: [113.8107, 22.6393] },
       { name: "Beijing Capital", code: "PEK", coordinates: [116.5975, 40.0799] },
-      { name: "Chicago O'Hare", code: "ORD", coordinates: [-87.9073, 41.9742] }
+
+      // Europe
+      { name: "Frankfurt", code: "FRA", coordinates: [8.5622, 50.0379] },
+      { name: "Paris Charles de Gaulle", code: "CDG", coordinates: [2.5479, 49.0097] },
+
+      // North America
+      { name: "Memphis", code: "MEM", coordinates: [-89.9767, 35.0424] },
+      { name: "Anchorage", code: "ANC", coordinates: [-149.9964, 61.1743] },
+      { name: "Louisville", code: "SDF", coordinates: [-85.7360, 38.1744] },
+      { name: "Miami", code: "MIA", coordinates: [-80.2906, 25.7959] },
+      { name: "Los Angeles", code: "LAX", coordinates: [-118.4081, 33.9416] },
+      { name: "Cincinnati", code: "CVG", coordinates: [-84.6678, 39.0488] },
+      { name: "Chicago O'Hare", code: "ORD", coordinates: [-87.9073, 41.9742] },
+
+      // Africa
+      { name: "Johannesburg", code: "JNB", coordinates: [28.2460, -26.1367] },
+      { name: "Addis Ababa", code: "ADD", coordinates: [38.7993, 8.9779] },
+      { name: "Nairobi", code: "NBO", coordinates: [36.9278, -1.3192] },
+      { name: "Cairo", code: "CAI", coordinates: [31.4056, 30.1219] },
+      { name: "Lagos", code: "LOS", coordinates: [3.3212, 6.5774] },
+
+      // South America
+      { name: "São Paulo Guarulhos", code: "GRU", coordinates: [-46.4731, -23.4356] },
+      { name: "Bogotá", code: "BOG", coordinates: [-74.1469, 4.7016] },
+      { name: "Santiago", code: "SCL", coordinates: [-70.7858, -33.3930] },
+      { name: "Buenos Aires", code: "EZE", coordinates: [-58.5358, -34.8222] },
+      { name: "Lima", code: "LIM", coordinates: [-77.1143, -12.0219] }
     ];
 
     const map = new maplibregl.Map({
       container: "map",
       style: "https://tiles.openfreemap.org/styles/fiord",
-      center: [10, 25],
+      center: [10, 20],
       zoom: 1.5,
       minZoom: 1,
       maxZoom: 8,
@@ -236,8 +256,8 @@
 
         function frame(now) {
           const progress = Math.min(1, (now - startTime) / duration);
-
           const position = greatCirclePoint(start, end, progress);
+
           marker.setLngLat(position);
 
           if (progress < 1) {
@@ -296,7 +316,10 @@
     function addFlightRoutes() {
       const features = airports.map(airport => ({
         type: "Feature",
-        properties: { name: airport.name, code: airport.code },
+        properties: {
+          name: airport.name,
+          code: airport.code
+        },
         geometry: {
           type: "LineString",
           coordinates: Array.from({ length: 101 }, (_, index) =>
@@ -357,8 +380,10 @@
         const destination = airports[index];
         const destinationCoordinates = destination.coordinates;
 
-        setStatus("Departing Schiphol · En route to " +
-          destination.name + " (" + destination.code + ")");
+        setStatus(
+          "Departing Schiphol · En route to " +
+          destination.name + " (" + destination.code + ")"
+        );
 
         await animateMarker(
           marker,
@@ -368,8 +393,11 @@
         );
 
         marker.setLngLat(destinationCoordinates);
-        setStatus("Arrived at " + destination.name +
-          " (" + destination.code + ")");
+
+        setStatus(
+          "Arrived at " + destination.name +
+          " (" + destination.code + ")"
+        );
 
         await wait(1000);
 
@@ -383,6 +411,7 @@
         );
 
         marker.setLngLat(home.coordinates);
+
         setStatus("Back at Schiphol · Preparing next flight");
 
         await wait(1000);
@@ -404,7 +433,9 @@
           .setLngLat(home.coordinates)
           .addTo(map);
 
-        setStatus("JBJ Air Freight · Ready for departure from Schiphol");
+        setStatus(
+          "JBJ Air Freight · 30 cargo airports · Ready for departure from Schiphol"
+        );
 
         startFlights(planeMarker).catch(error => {
           console.error("Flight animation error:", error);
